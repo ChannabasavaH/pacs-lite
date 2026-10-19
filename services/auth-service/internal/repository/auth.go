@@ -23,7 +23,7 @@ func (r *AuthRepository) SignUp(account *models.Account) error {
 	var count int64
 	err := r.DB.Model(&models.Account{}).
 		Where(
-			"emial = ? OR username = ?",
+			"email = ? OR username = ?",
 			account.Email,
 			account.Username,
 		).

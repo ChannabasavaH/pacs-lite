@@ -58,6 +58,7 @@ func (h *AuthHandlers) SignUp(c *gin.Context) {
 		Username: request.Username,
 		Email: request.Email,
 		Password: string(hashedPassword),
+		AccountType: request.AccountType,
 	}
 
 	user, err := h.Service.SignUpUser(account)
@@ -70,7 +71,7 @@ func (h *AuthHandlers) SignUp(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal server error",
+			"error": err.Error(),
 		})
 		return
 	}

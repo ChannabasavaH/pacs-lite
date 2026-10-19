@@ -1,11 +1,13 @@
 package database
 
 import (
+	"auth-service/internal/config"
+	"auth-service/migrations"
 	"fmt"
 	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"auth-service/internal/config"
 )
 
 func ConnectPostgres(cfg config.DBConfig) *gorm.DB {
@@ -25,6 +27,12 @@ func ConnectPostgres(cfg config.DBConfig) *gorm.DB {
 	}
 
 	log.Println("Connected to database successfully")
+
+	if err := migrations.Migrate(db); err != nil {
+		log.Fatal("Migration of database failed: ", err)
+	}
+
+	log.Println("Migrated the database")
 
 	return db
 }

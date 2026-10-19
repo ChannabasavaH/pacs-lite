@@ -10,5 +10,7 @@ func SetUpRoutes (router *gin.Engine, authHandler *handlers.AuthHandlers){
 	api := router.Group("api/auth")
 	{
 		api.POST("/signup", authHandler.SignUp)
+		api.POST("/login", authHandler.LoginUser)
+		api.POST("/logout", authHandler.Logout)
 	}
 }

@@ -40,4 +40,19 @@ func (r *AuthRepository) SignUp(account *models.Account) error {
 	return r.DB.Create(account).Error
 }
 
+func (r *AuthRepository) Login(email string) (*models.Account, error) {
+	var existingAccount models.Account
+	err := r.DB.Model(&models.Account{}).
+		Where("email = ?",
+	email).First(&existingAccount).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("invalid email/username or password")
+		}
+
+		return nil, err
+	}
+	return &existingAccount, nil
+}
 

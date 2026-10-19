@@ -18,6 +18,22 @@ type APPConfig struct {
 	Port string
 }
 
+type JWTConfig struct {
+	JWT_Secret string
+}
+
+func JWTLoadConfig() JWTConfig {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Println("Failed to load jwt secret")
+	}
+
+	return JWTConfig{
+		JWT_Secret: os.Getenv("JWT_SECRET"),
+	}
+}
+
 func APPLoadConfig() APPConfig {
 	err := godotenv.Load()
 

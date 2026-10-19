@@ -13,8 +13,17 @@ type User struct {
 	AccountType models.AccountType `json:"account_type" binding:"required,oneof=RADIOLOGIST"`
 }
 
+type Login struct{
+	Email       string             `json:"email" binding:"required,email"`
+	Password    string             `json:"password" binding:"required,min=8"`
+}
+
 func ValidateUser(user *User) error {
 	validate := validator.New()
 	return validate.Struct(user)
 }
 
+func ValidateLogin(loginUser *Login) error {
+	validateLogin := validator.New()
+	return validateLogin.Struct(loginUser)
+}

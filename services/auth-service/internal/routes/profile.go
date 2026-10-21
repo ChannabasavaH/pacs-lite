@@ -13,5 +13,6 @@ func SetUpProfileRoutes(router *gin.Engine, profileHandlers *handlers.ProfileHan
 
 	{
 		protected.POST("/create-profile", profileHandlers.CreateProfile)
+		protected.GET("/me", profileHandlers.GetProfile)
 	}
 }

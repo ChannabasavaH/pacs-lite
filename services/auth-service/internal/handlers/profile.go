@@ -76,3 +76,37 @@ func (h *ProfileHandler) CreateProfile(c *gin.Context){
 		"profile": profile,
 	})
 }
+
+func (h *ProfileHandler) GetProfile(c *gin.Context){
+	accountIDValue, exists := c.Get("userID")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthrized",
+		})
+		return
+	}
+
+	accountID, ok := accountIDValue.(string)
+
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Invalid User ID",
+		})
+		return
+	}
+
+	profile, err := h.Service.GetProfile(accountID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"profile": profile,
+	})
+}

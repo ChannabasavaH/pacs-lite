@@ -118,7 +118,7 @@ func (h *AuthHandlers) LoginUser(c *gin.Context){
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id": account.ID,
 		"account_type": account.AccountType,
-		"expiry": time.Now().Add(time.Hour * 24).Unix(),
+		"exp": time.Now().Add(time.Hour * 24).Unix(),
 		"iat": time.Now().Unix(),
 	})
 

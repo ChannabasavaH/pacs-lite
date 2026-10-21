@@ -20,15 +20,19 @@ func main(){
 
 	db := database.ConnectPostgres(cfg)
 
-	repo := repository.NewSignUpRepository(db)
+	authRepo := repository.NewSignUpRepository(db)
+	profileRepo := repository.NewProfileRepository(db)
 
-	service := service.NewAuthService(repo)
+	authService := service.NewAuthService(authRepo)
+	profileService := service.NewProfileService(profileRepo)
 
-	handlers := handlers.NewAuthHandlers(service)
+	authHandlers := handlers.NewAuthHandlers(authService)
+	profileHandlers := handlers.NewProfileHandler(profileService)
 
 	router := gin.Default()
 
-	routes.SetUpRoutes(router, handlers)
+	routes.SetUpAuthRoutes(router, authHandlers)
+	routes.SetUpProfileRoutes(router, profileHandlers)
 
 	fmt.Println("Welcome to pacs lite")
 

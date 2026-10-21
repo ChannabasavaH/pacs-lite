@@ -23,7 +23,7 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler{
 func (h *ProfileHandler) CreateProfile(c *gin.Context){
 	var request validations.Profile
 
-	if err := c.ShouldBindJSON(request); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -60,7 +60,7 @@ func (h *ProfileHandler) CreateProfile(c *gin.Context){
 		FirstName: request.FirstName,
 		LastName: request.LastName,
 		Gender: request.Gender,
-		DOB: request.DOB,
+		DOB: request.DOB.Time,
 	}
 
 	profile, err := h.Service.CreateProfile(profile)

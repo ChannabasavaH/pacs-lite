@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"auth-service/internal/config"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

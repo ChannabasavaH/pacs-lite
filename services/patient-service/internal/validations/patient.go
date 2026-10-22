@@ -20,7 +20,7 @@ type Patient struct {
 	IsActive bool `json:"is_active"`
 }
 
-func validatePatient(patient *Patient) error {
+func ValidatePatient(patient *Patient) error {
 	validate := validator.New()
 	return validate.Struct(patient)
 } 

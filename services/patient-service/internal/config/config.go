@@ -19,6 +19,10 @@ type APPConfig struct {
 	APPPort string
 }
 
+type JWTConfig struct {
+	JWT_Public_Key_Path string
+}
+
 func DBLoadConfig() DBConfig {
 
 	err := godotenv.Load()
@@ -45,5 +49,17 @@ func APPLoadConfig() APPConfig {
 
 	return APPConfig{
 		APPPort: os.Getenv("APP_PORT"),
+	}
+}
+
+func JWTLoadConfig() JWTConfig {
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Println("Failed to load jwt env")
+	}
+
+	return JWTConfig{
+		JWT_Public_Key_Path: os.Getenv("JWT_PUBLIC_KEY_PATH"),
 	}
 }

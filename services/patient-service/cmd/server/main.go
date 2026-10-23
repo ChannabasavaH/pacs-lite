@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"patient-service/internal/config"
 	"patient-service/internal/database"
 	"patient-service/internal/handlers"
 	"patient-service/internal/repository"
 	"patient-service/internal/routes"
 	"patient-service/internal/service"
+	"patient-service/internal/utils"
+	"patient-service/internal/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,10 +18,16 @@ import (
 func main(){
 	dbCfg := config.DBLoadConfig()
 	appCfg := config.APPLoadConfig()
+	jwtConfig := config.JWTLoadConfig()
 	db := database.ConnectPostgres(dbCfg)
 	patientRepo := repository.NewPatientRepository(db)
 	patientService := service.NewPatientService(patientRepo)
 	patientHandlers := handlers.NewPatientHandler(patientService)
+
+	publicKey, err := utils.LoadPublicKey(jwtConfig.JWT_Public_Key_Path)
+	if err != nil {
+		log.Fatal("Failed to laod jwt public key: ", err)
+	}
 
 	router := gin.Default()
 
@@ -28,9 +37,7 @@ func main(){
 		})
 	})
 
-	jwtAuth := existingJWTMiddleware()
-
-	routes.SetUpPatientRoutes(router, patientHandlers, jwtAuth)
+	routes.SetUpPatientRoutes(router, patientHandlers, middleware.AuthMiddleware(publicKey))
 
 	port := appCfg.APPPort
 

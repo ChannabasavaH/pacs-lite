@@ -20,6 +20,8 @@ type APPConfig struct {
 
 type JWTConfig struct {
 	JWT_Secret string
+	JWT_Private_Key_Path string
+	JWT_Public_Key_Path string
 }
 
 func JWTLoadConfig() JWTConfig {
@@ -31,6 +33,8 @@ func JWTLoadConfig() JWTConfig {
 
 	return JWTConfig{
 		JWT_Secret: os.Getenv("JWT_SECRET"),
+		JWT_Private_Key_Path: os.Getenv("JWT_PRIVATE_KEY_PATH"),
+		JWT_Public_Key_Path: os.Getenv("JWT_PUBLIC_KEY_PATH"),
 	}
 }
 

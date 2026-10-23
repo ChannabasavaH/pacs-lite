@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"auth-service/internal/config"
+	"auth-service/internal/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +11,10 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	jwtcfg := config.JWTLoadConfig()
+	publicKey, err := utils.LoadPublicKey(jwtcfg.JWT_Public_Key_Path)
+	if err != nil {
+		panic("Failed to load RSA public key: " + err.Error())
+	}
 
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie("token")
@@ -22,17 +27,16 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if token.Method != jwt.SigningMethodHS256 {
+			if token.Method != jwt.SigningMethodRS256 {
 				return nil, jwt.ErrSignatureInvalid
 			}
 
-			return []byte(jwtcfg.JWT_Secret), nil
+			return publicKey, nil
 		},
 
-			jwt.WithValidMethods([]string{
-				jwt.SigningMethodHS256.Alg(),
-			}),
+			jwt.WithValidMethods([]string{"RS256"}),
 			jwt.WithExpirationRequired(),
+			jwt.WithIssuer("pacs-auth"),
 		)
 
 		if err != nil || token == nil || !token.Valid {

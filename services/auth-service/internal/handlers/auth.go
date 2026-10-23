@@ -12,6 +12,7 @@ import (
 	"net/http"
 
 	"auth-service/internal/config"
+	"auth-service/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -89,7 +90,15 @@ func (h *AuthHandlers) SignUp(c *gin.Context) {
 
 func (h *AuthHandlers) LoginUser(c *gin.Context){
 	jwtcfg := config.JWTLoadConfig()
+	privateKey, err := utils.LoadPrivateKey(jwtcfg.JWT_Private_Key_Path)
 	var request validations.Login
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Error loading private key",
+		})
+		return
+	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -115,14 +124,15 @@ func (h *AuthHandlers) LoginUser(c *gin.Context){
         return
     }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
 		"id": account.ID,
 		"account_type": account.AccountType,
+		"iss": "pacs-auth",
 		"exp": time.Now().Add(time.Hour * 24).Unix(),
 		"iat": time.Now().Unix(),
 	})
 
-	tokenString, err := token.SignedString([]byte(jwtcfg.JWT_Secret))
+	tokenString, err := token.SignedString(privateKey)
 
 	if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{
